@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 //resolve the cors issue
 builder.Services.AddCors();
 builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 var app = builder.Build();
 

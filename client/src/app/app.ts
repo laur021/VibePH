@@ -19,7 +19,7 @@ export class App implements OnInit {
 
   async getMembers() {
     try {
-      return lastValueFrom(this.http.get('https://localhost:5001/api/members'));
+      return lastValueFrom(this.http.get('https://localhost:5001/api/member'));
     } catch (error) {
       console.error('Error fetching members:', error);
       throw error;

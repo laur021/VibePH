@@ -1,15 +1,10 @@
-using API.Data;
 using API.Entities;
 using API.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class MembersController(IMemberService memberService) : ControllerBase
+    public class MembersController(IMemberService memberService) : BaseApiController
     {
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<AppUser>>> GetMemberList()
