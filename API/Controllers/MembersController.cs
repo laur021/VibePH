@@ -9,7 +9,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MemberController(IMemberService memberService) : ControllerBase
+    public class MembersController(IMemberService memberService) : ControllerBase
     {
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<AppUser>>> GetMemberList()
