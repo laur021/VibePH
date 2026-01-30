@@ -35,6 +35,29 @@ public class AccountService(AppDbContext context) : IAccountService
         return user;
     }
 
+    public async Task<AppUser> LoginAsync(LoginDto loginDto)
+    {
+        var normalizedEmail = NormalizeEmail(loginDto.Email);
+
+        var user = await context.Users.SingleOrDefaultAsync(u => u.Email == normalizedEmail)
+            ?? throw new UnauthorizedAccessException("Invalid email address");
+
+        using var hmac = new HMACSHA512(user.PasswordSalt);
+
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+
+        for (int i = 0; i < computedHash.Length; i++)
+        {
+            if (computedHash[i] != user.PasswordHash[i])
+            {
+                throw new UnauthorizedAccessException("Invalid Password");
+            }
+        }
+
+        return user;
+    }
+
+    /** Helper methods **/
     private async Task<bool> IsEmailExists(string email)
     {
         return await context.Users.AnyAsync(u => u.Email == NormalizeEmail(email));
@@ -44,5 +67,6 @@ public class AccountService(AppDbContext context) : IAccountService
     {
         return email.Trim().ToLower();
     }
+
 
 }

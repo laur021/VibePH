@@ -9,3 +9,12 @@ Content-Type: application/json
   "email": "admin@example.com",
   "password": "P@ssw0rd!"
 }
+
+### Login
+POST {{baseUrl}}/api/accounts/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "P@ssw0rd!"
+}

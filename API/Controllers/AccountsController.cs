@@ -16,4 +16,11 @@ public class AccountsController(IAccountService accountService) : BaseApiControl
         var user = await accountService.RegisterAsync(registerDto);
         return Ok(user);
     }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<AppUser>> Login(LoginDto loginDto)
+    {
+        var user = await accountService.LoginAsync(loginDto);
+        return Ok(user);
+    }
 }
