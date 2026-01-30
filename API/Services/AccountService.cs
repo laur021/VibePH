@@ -4,14 +4,15 @@ using System.Text;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Services;
 
-public class AccountService(AppDbContext context) : IAccountService
+public class AccountService(AppDbContext context, ITokenService tokenService) : IAccountService
 {
-    public async Task<AppUser> RegisterAsync(RegisterDto registerDto)
+    public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
     {
 
         if (await IsEmailExists(registerDto.Email))
@@ -32,10 +33,10 @@ public class AccountService(AppDbContext context) : IAccountService
         context.Users.Add(user);
         await context.SaveChangesAsync();
 
-        return user;
+        return user.ToDto(tokenService);
     }
 
-    public async Task<AppUser> LoginAsync(LoginDto loginDto)
+    public async Task<UserDto> LoginAsync(LoginDto loginDto)
     {
         var normalizedEmail = NormalizeEmail(loginDto.Email);
 
@@ -54,7 +55,7 @@ public class AccountService(AppDbContext context) : IAccountService
             }
         }
 
-        return user;
+        return user.ToDto(tokenService);
     }
 
     /** Helper methods **/
@@ -67,6 +68,4 @@ public class AccountService(AppDbContext context) : IAccountService
     {
         return email.Trim().ToLower();
     }
-
-
 }

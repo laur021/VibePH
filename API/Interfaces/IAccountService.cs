@@ -6,6 +6,6 @@ namespace API.Interfaces;
 
 public interface IAccountService
 {
-    Task<AppUser> RegisterAsync(RegisterDto registerDto);
-    Task<AppUser> LoginAsync(LoginDto loginDto);
+    Task<UserDto> RegisterAsync(RegisterDto registerDto);
+    Task<UserDto> LoginAsync(LoginDto loginDto);
 }

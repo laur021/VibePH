@@ -11,14 +11,14 @@ namespace API.Controllers;
 public class AccountsController(IAccountService accountService) : BaseApiController
 {
     [HttpPost("register")]
-    public async Task<ActionResult<AppUser>> Register(RegisterDto registerDto)
+    public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
     {
         var user = await accountService.RegisterAsync(registerDto);
         return Ok(user);
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AppUser>> Login(LoginDto loginDto)
+    public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
     {
         var user = await accountService.LoginAsync(loginDto);
         return Ok(user);
