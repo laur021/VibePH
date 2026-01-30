@@ -18,6 +18,7 @@ public class TokenService(IConfiguration config) : ITokenService
         if (tokenKey.Length < 64)
             throw new Exception("Token key must be at least 64 characters long");
 
+        //Converts the secret string into a byte array, Symmetric = same key signs and validates tokens
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
 
         var claims = new List<Claim>
@@ -26,8 +27,10 @@ public class TokenService(IConfiguration config) : ITokenService
             new(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
+        //Signing credentials specify the key and the algorithm used to sign the token
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
+        //Combines all token configuration in one place
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
@@ -36,7 +39,9 @@ public class TokenService(IConfiguration config) : ITokenService
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
+        //builds the token
         var token = tokenHandler.CreateToken(tokenDescriptor);
+        //converts it to a string
         return tokenHandler.WriteToken(token);
     }
 }
