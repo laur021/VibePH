@@ -1,0 +1,32 @@
+<div class="hero bg-base-200 min-h-screen">
+  @if (!registerMode()) {
+    <div class="hero-content text-center">
+      <div class="flex flex-col items-center">
+        <svg
+          class="size-42 text-primary"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <!-- Heroicons users icon -->
+          <path
+            fill-rule="evenodd"
+            d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0ZM15.75 9.75a3 3 0 110-6 3 3 0 010 6ZM3 20.25a6 6 0 0112 0v.75H3v-.75ZM17.25 21v-.75a7.47 7.47 0 00-1.318-4.236 4.5 4.5 0 016.318 4.236V21h-5Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+
+        <h1 class="text-5xl font-bold">Find your match</h1>
+
+        <p class="py-6">Come on in. All you need to do is sign up.</p>
+
+        <div class="flex items-center gap-3">
+          <button (click)="showRegister(true)" class="btn btn-primary btn-lg">Register</button>
+          <button class="btn btn-info btn-lg">Learn more</button>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <app-register (showForm)="showRegister($event)" />
+  }
+</div>

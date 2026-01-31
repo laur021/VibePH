@@ -5,9 +5,9 @@ POST {{baseUrl}}/api/accounts/register
 Content-Type: application/json
 
 {
-  "displayName": "bob",
-  "email": "bob@example.com",
-  "password": "P@ssw0rd!"
+  "displayName": "laur",
+  "email": "laur@example.com",
+  "password": "password"
 }
 
 ### Login
