@@ -1,7 +1,7 @@
 @baseUrl = https://localhost:5001
 
 ### Register
-POST {{baseUrl}}/api/accounts/register
+POST {{baseUrl}}/api/buggy/auth
 Content-Type: application/json
 
 {

@@ -1,0 +1,13 @@
+@baseUrl = https://localhost:5001
+
+### Unauthorized
+GET {{baseUrl}}/api/buggy/auth
+
+### Not Found
+GET {{baseUrl}}/api/buggy/not-found
+
+### Server Error
+GET {{baseUrl}}/api/buggy/server-error
+
+### Bad Request
+GET {{baseUrl}}/api/buggy/bad-request
