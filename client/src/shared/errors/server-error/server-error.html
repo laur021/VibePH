@@ -1,0 +1,27 @@
+<div
+  class="card bg-base-100 gap-3 w-4xl mx-auto flex flex-col items-center rounded-xl shadow-xl p-10"
+>
+  <!-- Heroicons bug icon -->
+  <svg class="w-32 h-32 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M9 9v6m6-6v6M4 15h16M4 9h16m-9-6h2a2 2 0 012 2v2H9V5a2 2 0 012-2z"
+    />
+  </svg>
+
+  <h1 class="card-title text-4xl justify-center">Server Error</h1>
+
+  <p class="card-body text-xl text-center">
+    {{ error?.message }}
+  </p>
+
+  <button class="btn btn-primary" (click)="detailsToggle()">Details</button>
+
+  @if (showDetails) {
+    <div class="mt-4 text-sm text-left w-full overflow-auto">
+      <pre>{{ error?.details }}</pre>
+    </div>
+  }
+</div>

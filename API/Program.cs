@@ -1,5 +1,6 @@
 using API.Data;
 using API.Interfaces;
+using API.Middleware;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -75,7 +76,7 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = string.Empty;
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1");
 });
-
+app.UseMiddleware<ExceptionMiddleware>();
 //resolve the cors issue
 app.UseCors(x => x
     .AllowAnyHeader()

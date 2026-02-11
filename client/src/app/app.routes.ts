@@ -5,6 +5,9 @@ import { Lists } from '../features/lists/lists';
 import { MemberDetail } from '../features/members/member-detail/member-detail';
 import { MemberList } from '../features/members/member-list/member-list';
 import { Messages } from '../features/messages/messages';
+import { TestErrors } from '../features/test-errors/test-errors';
+import { NotFound } from '../shared/errors/not-found/not-found';
+import { ServerError } from '../shared/errors/server-error/server-error';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -19,6 +22,7 @@ export const routes: Routes = [
       { path: 'messages', component: Messages },
     ],
   },
-
-  { path: '**', component: Home }, // wildcard fallback
+  { path: 'errors', component: TestErrors },
+  { path: 'server-error', component: ServerError },
+  { path: '**', component: NotFound }, // wildcard fallback
 ];
