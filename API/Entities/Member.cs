@@ -15,7 +15,12 @@ public class Member
     public required string City { get; set; } = null!;
     public string Country { get; set; } = null!;
 
-    //nav properties
+    // Navigation property (one-to-one relationship with AppUser)
+    //
+    // [ForeignKey(nameof(Id))]
+    // - Tells EF that Member.Id is also the foreign key
+    // - This creates a shared primary key relationship
+    // - Member.Id == AppUser.Id
     [ForeignKey(nameof(Id))]
     public AppUser User { get; set; } = null!;
     public ICollection<Photo> Photos { get; set; } = [];

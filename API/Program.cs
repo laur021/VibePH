@@ -89,4 +89,26 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Create service scope (Service Locator pattern)
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+
+try
+{
+    // Resolve DbContext manually (no DI in Program.cs)
+    var context = services.GetRequiredService<AppDbContext>();
+
+    // Apply pending migrations & create DB if missing
+    await context.Database.MigrateAsync();
+
+    // Seed users
+    await Seed.SeedUsers(context);
+}
+catch (Exception ex)
+{
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred during migration");
+}
+
+
 app.Run();
