@@ -1,6 +1,5 @@
 using System;
 using System.Net;
-using System.Text.Json;
 using API.Errors;
 
 namespace API.Middleware;
@@ -19,18 +18,23 @@ public class ExceptionMiddleware(
         catch (Exception ex)
         {
             logger.LogError(ex, "{Message}", ex.Message);
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            context.Response.StatusCode = ex switch
+            {
+                UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+                InvalidOperationException => StatusCodes.Status400BadRequest,
+                KeyNotFoundException => StatusCodes.Status404NotFound,
+                _ => (int)HttpStatusCode.InternalServerError
+            };
 
             var response = env.IsDevelopment()
-                ? new ApiException(context.Response.StatusCode, ex.Message, ex.StackTrace?.ToString())
-                : new ApiException(context.Response.StatusCode, "Internal Server Error", null);
+                ? new ApiException(
+                    context.Response.StatusCode,
+                    ex.Message,
+                    new { detail = ex.StackTrace?.ToString() })
+                : new ApiException(context.Response.StatusCode, "Internal Server Error");
 
-            var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-
-            var json = JsonSerializer.Serialize(response, options);
-
-            await context.Response.WriteAsync(json);
+            await context.Response.WriteAsJsonAsync(response);
         }
     }
 }

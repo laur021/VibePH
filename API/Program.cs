@@ -1,9 +1,11 @@
 using API.Data;
 using API.Data.Repository;
+using API.Errors;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -13,6 +15,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var validationErrors = context.ModelState
+            .Where(x => x.Value?.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray());
+
+        var response = ApiResponse<object?>.ErrorResult(
+            "Validation failed.",
+            StatusCodes.Status400BadRequest,
+            validationErrors);
+
+        return new BadRequestObjectResult(response);
+    };
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -59,6 +79,30 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = false,   // Skipped in development
             ValidateAudience = false // Skipped in development
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = async context =>
+            {
+                context.HandleResponse();
+
+                var response = ApiResponse<object?>.ErrorResult(
+                    "Unauthorized.",
+                    StatusCodes.Status401Unauthorized);
+
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsJsonAsync(response);
+            },
+            OnForbidden = async context =>
+            {
+                var response = ApiResponse<object?>.ErrorResult(
+                    "Forbidden.",
+                    StatusCodes.Status403Forbidden);
+
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsJsonAsync(response);
+            }
+        };
     });
 
 var app = builder.Build();
@@ -83,6 +127,21 @@ app.UseCors(x => x
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+
+    if (response.StatusCode != StatusCodes.Status404NotFound)
+    {
+        return;
+    }
+
+    var payload = ApiResponse<object?>.ErrorResult(
+        "The requested resource was not found.",
+        StatusCodes.Status404NotFound);
+
+    await response.WriteAsJsonAsync(payload);
+});
 
 app.MapControllers();
 

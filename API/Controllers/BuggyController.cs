@@ -1,4 +1,5 @@
 using System;
+using API.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -6,15 +7,15 @@ namespace API.Controllers;
 public class BuggyController : BaseApiController
 {
     [HttpGet("auth")]
-    public IActionResult GetAuth()
+    public ActionResult<ApiResponse<object?>> GetAuth()
     {
-        return Unauthorized("You are not authorized to access this resource.");
+        return ErrorResponse("You are not authorized to access this resource.", StatusCodes.Status401Unauthorized);
     }
 
     [HttpGet("not-found")]
-    public IActionResult GetNotFound()
+    public ActionResult<ApiResponse<object?>> GetNotFound()
     {
-        return NotFound("The requested resource was not found.");
+        return ErrorResponse("The requested resource was not found.", StatusCodes.Status404NotFound);
     }
 
     [HttpGet("server-error")]
@@ -24,8 +25,8 @@ public class BuggyController : BaseApiController
     }
 
     [HttpGet("bad-request")]
-    public IActionResult GetBadRequest()
+    public ActionResult<ApiResponse<object?>> GetBadRequest()
     {
-        return BadRequest("Not a good request.");
+        return ErrorResponse("Not a good request.", StatusCodes.Status400BadRequest);
     }
 }

@@ -1,10 +1,6 @@
-using System;
-
 namespace API.Errors;
 
-public class ApiException(int StatusCode, string Message, string? Details)
+public class ApiException(int statusCode, string message, object? errors = null)
+    : ApiResponse<object?>(false, statusCode, message, null, errors)
 {
-    public int StatusCode { get; set; } = StatusCode;
-    public string Message { get; set; } = Message;
-    public string? Details { get; set; } = Details;
 }

@@ -1,4 +1,5 @@
 using API.Entities;
+using API.Errors;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,27 +10,29 @@ namespace API.Controllers
     public class MembersController(IUnitOfWork uow) : BaseApiController
     {
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<Member>>> GetMemberList()
+        public async Task<ActionResult<ApiResponse<IReadOnlyList<Member>>>> GetMemberList()
         {
-            return Ok(await uow.MemberRespository.GetMemberListAsync());
+            var members = await uow.MemberRespository.GetMemberListAsync();
+            return SuccessResponse(members, "Members retrieved successfully");
         }
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Member>> GetMember(string id)
+        public async Task<ActionResult<ApiResponse<Member>>> GetMember(string id)
         {
             var member = await uow.MemberRespository.GetMemberByIdAsync(id);
 
             if (member is null)
-                return NotFound();
+                return ErrorResponse<Member>("Member not found.", StatusCodes.Status404NotFound);
 
-            return Ok(member);
+            return SuccessResponse(member, "Member retrieved successfully");
         }
 
         [HttpGet("{id}/photos")]
-        public async Task<ActionResult<IReadOnlyList<Photo>>> GetMemberPhotos(string id)
+        public async Task<ActionResult<ApiResponse<IReadOnlyList<Photo>>>> GetMemberPhotos(string id)
         {
-            return Ok(await uow.MemberRespository.GetMemberPhotosAsync(id));
+            var photos = await uow.MemberRespository.GetMemberPhotosAsync(id);
+            return SuccessResponse(photos, "Member photos retrieved successfully");
         }
 
     }
