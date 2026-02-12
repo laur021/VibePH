@@ -8,9 +8,9 @@ using API.Extensions;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Services;
+namespace API.Data.Repository;
 
-public class AccountService(AppDbContext context, ITokenService tokenService) : IAccountService
+public class AccountRepository(AppDbContext context, ITokenService tokenService) : IAccountRepository
 {
     public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
     {

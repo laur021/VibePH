@@ -1,4 +1,5 @@
 using API.Data;
+using API.Data.Repository;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
@@ -20,7 +21,7 @@ builder.Services.AddSwaggerGen(options =>
     var securityScheme = new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Description = "Enter 'Bearer' [space] and then your token.",
+        Description = "Enter your token.",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
         Scheme = "bearer",
@@ -40,8 +41,9 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 });
 //resolve the cors issue
 builder.Services.AddCors();
-builder.Services.AddScoped<IMemberService, MemberService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IMemberRespository, MemberRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

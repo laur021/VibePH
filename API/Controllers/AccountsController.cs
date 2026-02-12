@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class AccountsController(IAccountService accountService) : BaseApiController
+public class AccountsController(IAccountRepository accountService) : BaseApiController
 {
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
