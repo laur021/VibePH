@@ -1,5 +1,9 @@
 export type ApiError = {
   message: string;
   statusCode: number;
-  details?: string; // Stack trace (optional)
+  details?: string;
+  errors?: {
+    detail?: string;
+    [key: string]: unknown;
+  } | null;
 };

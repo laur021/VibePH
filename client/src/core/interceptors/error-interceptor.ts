@@ -3,6 +3,7 @@ import { inject } from '@angular/core/primitives/di';
 import { NavigationExtras, Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { ToastService } from '../services/toast-service';
+import { ApiError } from '../../types/error';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);
@@ -28,7 +29,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               return throwError(() => modelStateErrors.flat());
             } else {
               // Handle non-validation 400 error (simple string message)
-              toast.error(error.error);
+              toast.error(error.error?.message ?? 'Bad request');
             }
             break;
           case 401:
@@ -38,8 +39,17 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             router.navigateByUrl('/not-found');
             break;
           case 500:
+            const serverError = error.error as ApiError;
+            const details =
+              serverError?.details ??
+              (typeof serverError?.errors === 'object' &&
+              serverError.errors !== null &&
+              'detail' in serverError.errors
+                ? String(serverError.errors.detail ?? '')
+                : undefined);
+
             const extras: NavigationExtras = {
-              state: { error: error.error }, // Pass API error object
+              state: { error: { ...serverError, details } }, // Pass normalized API error object
             };
 
             router.navigateByUrl('/server-error', extras);
