@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApiError } from '../../../types/error';
+import { ApiError } from '../../../interface/error';
 
 @Component({
   selector: 'app-server-error',
