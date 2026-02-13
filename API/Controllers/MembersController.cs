@@ -32,6 +32,10 @@ namespace API.Controllers
         public async Task<ActionResult<ApiResponse<IReadOnlyList<Photo>>>> GetMemberPhotos(string id)
         {
             var photos = await uow.MemberRespository.GetMemberPhotosAsync(id);
+
+            if (photos is null || !photos.Any())
+                return ErrorResponse<IReadOnlyList<Photo>>("No photos found for this member.", StatusCodes.Status404NotFound);
+
             return SuccessResponse(photos, "Member photos retrieved successfully");
         }
 

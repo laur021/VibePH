@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace API.Entities;
 
@@ -21,8 +22,10 @@ public class Member
     // - Tells EF that Member.Id is also the foreign key
     // - This creates a shared primary key relationship
     // - Member.Id == AppUser.Id
+    [JsonIgnore]
     [ForeignKey(nameof(Id))]
     public AppUser User { get; set; } = null!;
+    [JsonIgnore]
     public ICollection<Photo> Photos { get; set; } = [];
 
 }
