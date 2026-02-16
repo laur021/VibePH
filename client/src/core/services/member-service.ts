@@ -4,6 +4,7 @@ import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ApiResponse } from '../../interface/apiResponse';
 import { Member } from '../../interface/member';
+import { Photo } from '../../interface/photo';
 import { AccountService } from './account-service';
 
 @Injectable({
@@ -23,6 +24,12 @@ export class MemberService {
   getMember(id: string) {
     return this.http
       .get<ApiResponse<Member>>(this.baseUrl + 'members/' + id)
+      .pipe(map((response) => response.data));
+  }
+
+  getMemberPhotos(id: string) {
+    return this.http
+      .get<ApiResponse<Photo[]>>(this.baseUrl + 'members/' + id + '/photos')
       .pipe(map((response) => response.data));
   }
 }

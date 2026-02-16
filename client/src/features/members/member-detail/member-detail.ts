@@ -1,28 +1,42 @@
-import { Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
-import { MemberService } from '../../../core/services/member-service';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
+import { filter } from 'rxjs/internal/operators/filter';
 import { Member } from '../../../interface/member';
+import { AgePipe } from '../../../core/pipes/age-pipe';
 
 @Component({
   selector: 'app-member-detail',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, AgePipe],
   templateUrl: './member-detail.html',
 })
-export class MemberDetail {
-  private memberService = inject(MemberService);
+export class MemberDetail implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  protected title = signal<string | undefined>('Profile');
+  protected member = signal<Member | undefined>(undefined);
 
-  // Convert an Observable (HTTP request) into a Signal
-  protected member = toSignal(
-    // Call the service to fetch a single member
-    // from membercard -> [routerLink]="['/members', member.id]"
-    this.memberService.getMember(this.route.snapshot.paramMap.get('id')!),
+  ngOnInit(): void {
+    // Subscribe to route resolved data (from resolver)
+    this.route.data.subscribe({
+      next: (data) =>
+        // Set the resolved 'member' data into the signal
+        this.member.set(data['member']),
+    });
 
-    {
-      // Provide an initial synchronous value
-      // This prevents undefined errors before the HTTP response arrives
-      initialValue: {} as Member,
-    },
-  );
+    // Set initial child route title (e.g., Profile, Photos, etc.)
+    this.title.set(this.route.firstChild?.snapshot?.title);
+
+    // Listen for route changes (when navigating between child routes)
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      // Update title after child navigation completes
+      this.title.set(this.route.firstChild?.snapshot.title);
+    });
+  }
 }
