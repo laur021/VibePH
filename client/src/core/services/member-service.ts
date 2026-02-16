@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ApiResponse } from '../../interface/apiResponse';
@@ -14,6 +14,7 @@ export class MemberService {
   private http = inject(HttpClient);
   private accountService = inject(AccountService);
   private baseUrl = environment.apiUrl;
+  public isEditMode = signal<boolean>(false);
 
   getMembers() {
     return this.http

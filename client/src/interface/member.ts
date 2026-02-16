@@ -10,3 +10,10 @@ export interface Member {
   city: string;
   country: string;
 }
+
+export interface EditableMember {
+  displayName: string;
+  description?: string;
+  city: string;
+  country: string;
+}
