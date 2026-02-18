@@ -39,7 +39,7 @@
       <div class="card bg-base-100 w-3/4 p-6">
         <div class="flex justify-between items-center">
           <h3 class="card-title text-3xl text-primary">{{ title() }}</h3>
-          @if (isCurrentUser()) {
+          @if (showEditButton()) {
             <button
               class="btn btn-outline btn-primary"
               (click)="memberService.isEditMode.set(!memberService.isEditMode())"

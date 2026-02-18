@@ -12,7 +12,39 @@
 
     <h3 class="text-lg font-semibold text-primary">About {{ member.displayName }}</h3>
     @if (memberService.isEditMode()) {
-      <div>Profile form goes here</div>
+      <form [formGroup]="form" (ngSubmit)="updateProfile()" class="flex flex-col w-full gap-4">
+        <label class="floating-label">
+          <span>Display name</span>
+          <input formControlName="displayName" class="input w-full" placeholder="Display name" />
+        </label>
+        <label class="floating-label">
+          <span>Description</span>
+          <textarea
+            name="description"
+            class="textarea w-full"
+            placeholder="Description"
+            formControlName="description"
+          >
+          </textarea>
+        </label>
+        <label class="floating-label">
+          <span>City</span>
+          <input name="city" class="input w-full" placeholder="City" formControlName="city" />
+        </label>
+
+        <label class="floating-label">
+          <span>Country</span>
+          <input
+            name="country"
+            class="input w-full"
+            placeholder="Country"
+            formControlName="country"
+          />
+        </label>
+        <div class="flex self-end">
+          <button type="submit" class="btn btn-success">Submit</button>
+        </div>
+      </form>
     } @else {
       <div>
         {{ member.description }}

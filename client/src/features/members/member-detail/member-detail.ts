@@ -23,6 +23,7 @@ export class MemberDetail implements OnInit {
   protected memberService = inject(MemberService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  protected readonly activeChildPath = signal<string | undefined>(undefined);
   protected title = signal<string | undefined>('Profile');
   protected member = signal<Member | undefined>(undefined);
   protected isCurrentUser = computed(
@@ -32,20 +33,23 @@ export class MemberDetail implements OnInit {
   ngOnInit(): void {
     // Subscribe to route resolved data (from resolver)
     this.route.data.subscribe({
-      next: (data) =>
-        // Set the resolved 'member' data into the signal
-        this.member.set(data['member']),
+      next: (data) => this.member.set(data['member']), // Set the resolved 'member' data into the signal
     });
 
-    // Set initial child route title (e.g., Profile, Photos, etc.)
-    this.title.set(this.route.firstChild?.snapshot?.title);
+    const child = this.route.firstChild; // Get the currently active child route (e.g. 'profile', 'photos', 'messages')
+    this.activeChildPath.set(child?.routeConfig?.path); // and store its configured path so we can react to which tab is active
+    this.title.set(this.route.firstChild?.snapshot?.title); // Set initial child route title (e.g., Profile, Photos, etc.)
 
     // Listen for route changes (when navigating between child routes)
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
-      // Update title after child navigation completes
-      this.title.set(this.route.firstChild?.snapshot.title);
-      // Reset edit mode when navigating to a different child route
-      this.memberService.isEditMode.set(false);
+      const child = this.route.firstChild;
+      this.activeChildPath.set(child?.routeConfig?.path);
+      this.title.set(this.route.firstChild?.snapshot.title); // Update title after child navigation completes
+      this.memberService.isEditMode.set(false); // Reset edit mode when navigating to a different child route
     });
   }
+
+  protected readonly showEditButton = computed(
+    () => this.isCurrentUser() && this.activeChildPath() === 'profile',
+  );
 }
