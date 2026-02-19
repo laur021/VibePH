@@ -3,7 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ApiResponse } from '../../interface/apiResponse';
-import { Member } from '../../interface/member';
+import { EditableMember, Member } from '../../interface/member';
 import { Photo } from '../../interface/photo';
 import { AccountService } from './account-service';
 
@@ -32,5 +32,9 @@ export class MemberService {
     return this.http
       .get<ApiResponse<Photo[]>>(this.baseUrl + 'members/' + id + '/photos')
       .pipe(map((response) => response.data));
+  }
+
+  updateMember(member: EditableMember) {
+    return this.http.put<ApiResponse<null>>(this.baseUrl + 'members/', member);
   }
 }

@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { FormBuilder, NgForm, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MemberService } from '../../../core/services/member-service';
 import { ToastService } from '../../../core/services/toast-service';
@@ -10,9 +10,16 @@ import { Member } from '../../../interface/member';
   selector: 'app-member-profile',
   imports: [DatePipe, ReactiveFormsModule],
   templateUrl: './member-profile.html',
+  host: {
+    '(window:beforeunload)': 'onBeforeUnload($event)',
+  },
 })
 export class MemberProfile implements OnInit {
-  @ViewChild('editForm') editForm?: NgForm;
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    if (this.form.dirty) {
+      event.preventDefault();
+    }
+  }
   protected memberService = inject(MemberService);
   private route = inject(ActivatedRoute);
   private toast = inject(ToastService);
@@ -42,8 +49,6 @@ export class MemberProfile implements OnInit {
     });
   }
 
-  
-
   updateProfile(): void {
     const member = this.member();
     if (!member) return;
@@ -55,7 +60,16 @@ export class MemberProfile implements OnInit {
       ...this.form.getRawValue(), // use form values
     };
 
-    this.toast.success('Profile updated successfully!');
-    this.memberService.isEditMode.set(false);
+    this.memberService.updateMember(updatedMember).subscribe({
+      next: (res) => {
+        this.member.set(updatedMember); // keep UI in sync
+        this.toast.success(res.message);
+        this.memberService.isEditMode.set(false);
+        this.form.markAsPristine();
+      },
+      error: (res) => {
+        this.toast.error(res.message);
+      },
+    });
   }
 }

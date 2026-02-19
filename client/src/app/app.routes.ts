@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../core/guards/auth-guard';
+import { preventUnsavedChangesGuard } from '../core/guards/prevent-unsaved-changes-guard';
 import { Home } from '../features/home/home';
 import { Lists } from '../features/lists/lists';
 import { MemberDetail } from '../features/members/member-detail/member-detail';
@@ -36,6 +37,7 @@ export const routes: Routes = [
             path: 'profile',
             component: MemberProfile,
             title: 'Profile',
+            canDeactivate: [preventUnsavedChangesGuard],
           },
           {
             path: 'photos',
