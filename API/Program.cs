@@ -1,6 +1,7 @@
 using API.Data;
 using API.Data.Repository;
 using API.Errors;
+using API.Helpers;
 using API.Interfaces;
 using API.Middleware;
 using API.Services;
@@ -64,6 +65,9 @@ builder.Services.AddCors();
 builder.Services.AddScoped<IMemberRespository, MemberRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
+builder.Services.Configure<CloudinarySettings>(builder.Configuration
+    .GetSection("CloudinarySettings"));
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

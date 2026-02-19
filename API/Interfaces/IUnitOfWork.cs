@@ -4,7 +4,7 @@ namespace API.Interfaces;
 
 public interface IUnitOfWork
 {
-    IMemberRespository MemberRespository { get; }
+    IMemberRespository MemberRepository { get; }
     IAccountRepository AccountRepository { get; }
     Task<bool> CompleteAsync();
     bool HasChanges();

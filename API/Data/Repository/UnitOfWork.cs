@@ -8,7 +8,7 @@ public class UnitOfWork(AppDbContext context, ITokenService tokenService) : IUni
 {
     private IMemberRespository? _memberRepository;
     private IAccountRepository? _accountRepository;
-    public IMemberRespository MemberRespository => _memberRepository
+    public IMemberRespository MemberRepository => _memberRepository
         ??= new MemberRepository(context);
 
     public IAccountRepository AccountRepository => _accountRepository
