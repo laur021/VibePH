@@ -40,7 +40,7 @@ export class AccountService {
   }
 
   // helper methods
-  private setCurrentUser(user: User) {
+  setCurrentUser(user: User) {
     if (user) {
       this.currentUser.set(user);
       localStorage.setItem('user', JSON.stringify(user));

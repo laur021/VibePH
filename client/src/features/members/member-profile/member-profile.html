@@ -1,5 +1,5 @@
 <!-- Execute signal with member() and use as member for cleaner access -->
-@if (member(); as member) {
+@if (this.memberService.member(); as member) {
   <div class="flex flex-col gap-3">
     <div class="flex gap-3">
       <span class="font-semibold">Member since:</span>
@@ -42,7 +42,7 @@
           />
         </label>
         <div class="flex self-end">
-          <button type="submit" class="btn btn-success">Submit</button>
+          <button type="submit" class="btn btn-success" [disabled]="!form.dirty">Submit</button>
         </div>
       </form>
     } @else {

@@ -25,16 +25,11 @@ export class MemberDetail implements OnInit {
   private router = inject(Router);
   protected readonly activeChildPath = signal<string | undefined>(undefined);
   protected title = signal<string | undefined>('Profile');
-  protected member = signal<Member | undefined>(undefined);
   protected isCurrentUser = computed(
     () => this.accountService.currentUser()?.id === this.route.snapshot.paramMap.get('id'),
   );
 
   ngOnInit(): void {
-    // Subscribe to route resolved data (from resolver)
-    this.route.data.subscribe({
-      next: (data) => this.member.set(data['member']), // Set the resolved 'member' data into the signal
-    });
 
     const child = this.route.firstChild; // Get the currently active child route (e.g. 'profile', 'photos', 'messages')
     this.activeChildPath.set(child?.routeConfig?.path); // and store its configured path so we can react to which tab is active

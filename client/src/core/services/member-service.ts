@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { map } from 'rxjs';
+import { map, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ApiResponse } from '../../interface/apiResponse';
 import { EditableMember, Member } from '../../interface/member';
@@ -15,6 +15,7 @@ export class MemberService {
   private accountService = inject(AccountService);
   private baseUrl = environment.apiUrl;
   public isEditMode = signal<boolean>(false);
+  member = signal<Member | null>(null);
 
   getMembers() {
     return this.http
@@ -24,8 +25,8 @@ export class MemberService {
 
   getMember(id: string) {
     return this.http
-      .get<ApiResponse<Member>>(this.baseUrl + 'members/' + id)
-      .pipe(map((response) => response.data));
+      .get<ApiResponse<Member>>(`${this.baseUrl}members/${id}`)
+      .pipe(tap((response) => this.member.set(response.data)));
   }
 
   getMemberPhotos(id: string) {

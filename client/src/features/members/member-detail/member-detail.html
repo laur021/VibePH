@@ -1,9 +1,9 @@
-@if (member() === undefined) {
+@if (this.memberService.member() === undefined) {
   <div class="flex items-center justify-center h-[85vh]">
     <div class="text-2xl text-primary">Loading...</div>
   </div>
 } @else {
-  @if (member(); as member) {
+  @if (this.memberService.member(); as member) {
     <div class="flex gap-6">
       <div class="card bg-base-100 flex flex-col h-[85vh] w-1/4">
         <img

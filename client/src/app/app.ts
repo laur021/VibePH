@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { BusyService } from '../core/services/busy-service';
 import { Nav } from '../layout/nav/nav';
 
 @Component({
@@ -8,6 +9,8 @@ import { Nav } from '../layout/nav/nav';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App  {
+export class App {
   protected router = inject(Router);
+  protected busyService = inject(BusyService);
+  protected isBusy = computed(() => this.busyService.busyRequestCount() > 0);
 }

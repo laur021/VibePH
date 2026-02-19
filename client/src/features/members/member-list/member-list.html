@@ -1,7 +1,5 @@
 <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-  @if (members().length === 0) {
-    <p>No members found.</p>
-  } @else {
+  @if (members().length !== 0) {
     @for (member of members(); track member.id) {
       <app-member-card [member]="member" />
     }
