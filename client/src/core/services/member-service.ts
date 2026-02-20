@@ -14,7 +14,7 @@ export class MemberService {
   private http = inject(HttpClient);
   private accountService = inject(AccountService);
   private baseUrl = environment.apiUrl;
-  public isEditMode = signal<boolean>(false);
+  public isEditMode = signal<boolean>(true);
   member = signal<Member | null>(null);
 
   getMembers() {
@@ -37,5 +37,13 @@ export class MemberService {
 
   updateMember(member: EditableMember) {
     return this.http.put<ApiResponse<null>>(this.baseUrl + 'members/', member);
+  }
+
+  uploadPhoto(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http
+      .post<ApiResponse<Photo>>(this.baseUrl + 'members/add-photo', formData)
+      .pipe(map((response) => response.data));
   }
 }

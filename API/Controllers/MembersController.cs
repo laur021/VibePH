@@ -71,14 +71,15 @@ namespace API.Controllers
         }
 
         [HttpPost("add-photo")]
-        public async Task<ActionResult<ApiResponse<Photo>>> AddPhoto([FromForm] IFormFile file)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<ApiResponse<Photo>>> AddPhoto([FromForm] PhotoUploadDto photoUploadDto)
         {
             var member = await uow.MemberRepository.GetMemberForUpdate(User.GetMemberId());
 
             if (member == null)
                 return ErrorResponse<Photo>("Cannot update member", StatusCodes.Status400BadRequest);
 
-            var result = await photoService.UploadPhotoAsync(file);
+            var result = await photoService.UploadPhotoAsync(photoUploadDto.File);
 
             if (result.Error != null)
                 return ErrorResponse<Photo>(result.Error.Message, StatusCodes.Status400BadRequest);

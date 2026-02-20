@@ -11,7 +11,6 @@ import { filter } from 'rxjs/internal/operators/filter';
 import { AgePipe } from '../../../core/pipes/age-pipe';
 import { AccountService } from '../../../core/services/account-service';
 import { MemberService } from '../../../core/services/member-service';
-import { Member } from '../../../interface/member';
 
 @Component({
   selector: 'app-member-detail',
@@ -30,7 +29,6 @@ export class MemberDetail implements OnInit {
   );
 
   ngOnInit(): void {
-
     const child = this.route.firstChild; // Get the currently active child route (e.g. 'profile', 'photos', 'messages')
     this.activeChildPath.set(child?.routeConfig?.path); // and store its configured path so we can react to which tab is active
     this.title.set(this.route.firstChild?.snapshot?.title); // Set initial child route title (e.g., Profile, Photos, etc.)
@@ -40,11 +38,11 @@ export class MemberDetail implements OnInit {
       const child = this.route.firstChild;
       this.activeChildPath.set(child?.routeConfig?.path);
       this.title.set(this.route.firstChild?.snapshot.title); // Update title after child navigation completes
-      this.memberService.isEditMode.set(false); // Reset edit mode when navigating to a different child route
+      // this.memberService.isEditMode.set(false); // Reset edit mode when navigating to a different child route
     });
   }
 
   protected readonly showEditButton = computed(
-    () => this.isCurrentUser() && this.activeChildPath() === 'profile',
+    () => this.isCurrentUser(), //&& this.activeChildPath() === 'profile'
   );
 }
