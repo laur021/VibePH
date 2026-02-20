@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using API.Data.Repository;
 using API.DTOs;
 using API.Entities;
 using API.Errors;
@@ -114,12 +115,13 @@ namespace API.Controllers
             if (member == null)
                 return ErrorResponse("Cannot get member from token", StatusCodes.Status400BadRequest);
 
-            var photo = member.Photos.SingleOrDefault(x => x.Id == photoId);
+            var photo = member.Photos.SingleOrDefault(p => p.Id == photoId);
 
-            if (member.ImageUrl == photo?.Url || photo == null)
-            {
-                return ErrorResponse("Cannot set this as main image", StatusCodes.Status400BadRequest);
-            }
+            if (photo == null)
+                return ErrorResponse("Photo not found for current member", StatusCodes.Status404NotFound);
+
+            if (member.ImageUrl == photo.Url)
+                return ErrorResponse("This photo is already your main image", StatusCodes.Status400BadRequest);
 
             member.ImageUrl = photo.Url;
             member.User.ImageUrl = photo.Url;
@@ -138,7 +140,7 @@ namespace API.Controllers
             if (member == null)
                 return ErrorResponse("Cannot get member from token", StatusCodes.Status400BadRequest);
 
-            var photo = member.Photos.SingleOrDefault(x => x.Id == photoId);
+            var photo = member.Photos.SingleOrDefault(p => p.Id == photoId);
 
             if (photo == null || photo.Url == member.ImageUrl)
             {
@@ -159,6 +161,6 @@ namespace API.Controllers
 
             return ErrorResponse("Problem deleting the photo", StatusCodes.Status400BadRequest);
         }
-    }
 
+    }
 }
