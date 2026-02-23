@@ -1,36 +1,53 @@
-import { Component, inject, output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { AccountService } from '../../../core/services/account-service';
-import { RegisterCreds } from '../../../interface/user';
+import { TextInput } from '../../../shared/text-input/text-input';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule],
+  imports: [ReactiveFormsModule, JsonPipe, TextInput],
   templateUrl: './register.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Register {
-  showForm = output<boolean>();
-  protected creds = {} as RegisterCreds;
+  readonly showForm = output<boolean>();
+  private readonly fb = inject(FormBuilder);
 
-  protected accountService = inject(AccountService);
+  protected readonly registerForm = this.fb.nonNullable.group(
+    {
+      email: ['', [Validators.required, Validators.email]],
+      displayName: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(8)]],
+      confirmPassword: ['', Validators.required],
+    },
+    { validators: this.passwordsMatchValidator() },
+  );
 
-  register() {
-    if (this.creds) {
-      this.accountService.register(this.creds).subscribe({
-        next: (user) => {
-          alert('User registered successfully:');
-          this.handleShowForm();
-        },
-        error: (error) => {
-          alert('Registration failed:');
-        },
-      });
-    } else {
-      console.error('No credentials provided');
-    }
+  register(): void {
+    if (this.registerForm.invalid) return;
+
+    const creds = this.registerForm.getRawValue();
+    console.log(creds);
   }
 
-  handleShowForm() {
+  handleShowForm(): void {
     this.showForm.emit(false);
+  }
+
+  private passwordsMatchValidator(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const password = group.get('password')?.value;
+      const confirm = group.get('confirmPassword')?.value;
+
+      return password === confirm ? null : { passwordMismatch: true };
+    };
   }
 }
