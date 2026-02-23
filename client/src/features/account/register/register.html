@@ -1,26 +1,105 @@
-<div class="card bg-base-100 min-w-xl mx-auto flex flex-col p-6 rounded-lg shadow-lg">
-  <div class="card-title justify-center text-3xl text-primary">Sign up</div>
+<div class="card bg-base-100 w-full min-w-md mx-auto shadow-lg px-4 sm:px-0">
+  <div class="card-body">
+    <h2 class="card-title justify-center text-3xl text-primary">Sign up</h2>
 
-  <div class="card-body w-full">
+    <!-- Steps Indicator -->
+    <ol class="steps mb-6">
+      <li class="step" [class.step-primary]="isStepOne()">Credentials</li>
+      <li class="step" [class.step-primary]="isStepTwo()">Profile</li>
+    </ol>
+
+    <!-- Unified Form -->
     <form [formGroup]="registerForm" class="flex flex-col gap-4 w-full" (ngSubmit)="register()">
-      <app-text-input label="Email" formControlName="email"> </app-text-input>
-      <app-text-input label="Display name" formControlName="displayName" />
-      <app-text-input label="Password" type="password" formControlName="password"> </app-text-input>
-      <app-text-input label="Confirm Password" type="password" formControlName="confirmPassword">
-      </app-text-input>
+      <!-- STEP 1 -->
+      @if (isStepOne()) {
+        <div formGroupName="credentials" class="flex flex-col gap-4">
+          <app-text-input label="Email" formControlName="email" />
 
-      <div class="flex items-center justify-end gap-3">
-        <button type="button" class="btn" (click)="handleShowForm()">Cancel</button>
-        <button [disabled]="registerForm.invalid" type="submit" class="btn btn-primary">
-          Register
-        </button>
-      </div>
+          <app-text-input label="Display name" formControlName="displayName" />
+
+          <app-text-input label="Password" type="password" formControlName="password" />
+
+          <app-text-input
+            label="Confirm Password"
+            type="password"
+            formControlName="confirmPassword"
+          />
+
+          @if (credentialsForm.errors?.['passwordMismatch'] && credentialsForm.touched) {
+            <div class="text-error text-sm">Passwords do not match</div>
+          }
+
+          <div class="flex items-center justify-end gap-3">
+            <button type="button" class="btn" (click)="handleShowForm()">Cancel</button>
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="credentialsForm.invalid"
+              (click)="nextStep()"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- STEP 2 -->
+      @if (isStepTwo()) {
+        <div formGroupName="profile" class="flex flex-col gap-4">
+          <fieldset class="flex items-center gap-6">
+            <legend class="font-semibold">Gender</legend>
+
+            <label class="flex items-center gap-2">
+              <input
+                type="radio"
+                value="male"
+                formControlName="gender"
+                class="radio radio-primary"
+              />
+              <span>Male</span>
+            </label>
+
+            <label class="flex items-center gap-2">
+              <input
+                type="radio"
+                value="female"
+                formControlName="gender"
+                class="radio radio-primary"
+              />
+              <span>Female</span>
+            </label>
+          </fieldset>
+
+          <app-text-input
+            label="Date of Birth"
+            type="date"
+            formControlName="dateOfBirth"
+            [maxDate]="maxDate"
+          />
+
+          <app-text-input label="City" formControlName="city" />
+
+          <app-text-input label="Country" formControlName="country" />
+
+          <div class="flex items-center justify-end gap-3">
+            <button type="button" class="btn" (click)="prevStep()">Back</button>
+
+            <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid">
+              Register
+            </button>
+          </div>
+        </div>
+      }
     </form>
-  </div>
-
-  <!-- Debugging form state -->
-  <div class="flex flex-col w-full mockup-code text-lg items-start px-2">
-    <div>Form value: {{ registerForm.value | json }}</div>
-    <div>Form status: {{ registerForm.status }}</div>
+    @if (validationErrors().length > 0) {
+      <div class="mt-5 flex bg-gray-200 rounded-2xl w-1/2 p-3 mx-auto">
+        <ul class="flex flex-col text-error space-y-1">
+          @for (error of validationErrors(); track $index) {
+            <li>{{ error }}</li>
+          }
+        </ul>
+      </div>
+    }
   </div>
 </div>

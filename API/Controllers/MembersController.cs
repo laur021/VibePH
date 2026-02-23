@@ -37,9 +37,6 @@ namespace API.Controllers
         {
             var photos = await uow.MemberRepository.GetMemberPhotosAsync(id);
 
-            if (photos is null || !photos.Any())
-                return ErrorResponse<IReadOnlyList<Photo>>("No photos found for this member.", StatusCodes.Status404NotFound);
-
             return SuccessResponse(photos, "Member photos retrieved successfully");
         }
         [HttpPut]

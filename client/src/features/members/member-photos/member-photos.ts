@@ -5,9 +5,9 @@ import { MemberService } from '../../../core/services/member-service';
 import { ToastService } from '../../../core/services/toast-service';
 import { Member } from '../../../interface/member';
 import { Photo } from '../../../interface/photo';
+import { DeleteButton } from '../../../shared/delete-button/delete-button';
 import { ImageUpload } from '../../../shared/image-upload/image-upload';
 import { StarButton } from '../../../shared/star-button/star-button';
-import { DeleteButton } from '../../../shared/delete-button/delete-button';
 
 @Component({
   selector: 'app-member-photos',
@@ -41,6 +41,9 @@ export class MemberPhotos {
         this.memberService.isEditMode.set(false);
         this.loading.set(false);
         this.photos.update((photos) => [...photos, photo]);
+        if (!this.memberService.member()?.imageUrl) {
+          this.setMainLocalPhoto(photo);
+        }
       },
       error: (error) => {
         console.log('Error uploading image: ', error);
@@ -52,19 +55,7 @@ export class MemberPhotos {
   setMainPhoto(photo: Photo) {
     this.memberService.setMainPhoto(photo.id).subscribe({
       next: (res) => {
-        const currentUser = this.accountService.currentUser();
-        if (currentUser) {
-          this.accountService.setCurrentUser({ ...currentUser, imageUrl: photo.url });
-        }
-
-        this.memberService.member.update(
-          (member) =>
-            ({
-              ...member,
-              imageUrl: photo.url,
-            }) as Member,
-        );
-
+        this.setMainLocalPhoto(photo);
         this.toast.success(res.message);
       },
       error: (res) => {
@@ -82,5 +73,20 @@ export class MemberPhotos {
         this.toast.error(res.message);
       },
     });
+  }
+
+  private setMainLocalPhoto(photo: Photo) {
+    const currentUser = this.accountService.currentUser();
+    if (currentUser) {
+      this.accountService.setCurrentUser({ ...currentUser, imageUrl: photo.url });
+    }
+
+    this.memberService.member.update(
+      (member) =>
+        ({
+          ...member,
+          imageUrl: photo.url,
+        }) as Member,
+    );
   }
 }

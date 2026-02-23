@@ -12,7 +12,11 @@ export interface LoginCreds {
 }
 
 export interface RegisterCreds {
-  displayName: string;
   email: string;
+  displayName: string;
   password: string;
+  gender: string;
+  dateOfBirth: string; // sent as ISO date string (no time)
+  city: string;
+  country: string;
 }

@@ -4,9 +4,9 @@
     class="input w-full"
     [type]="type()"
     [class.input-error]="control.invalid && control.touched"
-    [class.input-error]="control.valid && control.touched"
     [formControl]="control"
     [placeholder]="label()"
+    [max]="maxDate()"
   />
   <!-- Required -->
   @if (control.hasError('required') && control.touched) {
