@@ -1,9 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { map, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ApiResponse } from '../../interface/apiResponse';
 import { EditableMember, Member } from '../../interface/member';
+import { PaginatedResult } from '../../interface/pagination';
 import { Photo } from '../../interface/photo';
 import { AccountService } from './account-service';
 
@@ -17,10 +18,12 @@ export class MemberService {
   public isEditMode = signal<boolean>(false);
   member = signal<Member | null>(null);
 
-  getMembers() {
+  getMembers(pageNumber = 1, pageSize = 5) {
+    let params = new HttpParams().append('pageNumber', pageNumber).append('pageSize', pageSize);
+
     return this.http
-      .get<ApiResponse<Member[]>>(this.baseUrl + 'members')
-      .pipe(map((response) => response.data));
+      .get<ApiResponse<PaginatedResult<Member>>>(this.baseUrl + 'members', { params })
+      .pipe(map((response) => response.data.items));
   }
 
   getMember(id: string) {

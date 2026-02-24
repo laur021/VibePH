@@ -4,6 +4,7 @@ using API.DTOs;
 using API.Entities;
 using API.Errors;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,9 +15,9 @@ namespace API.Controllers
     public class MembersController(IUnitOfWork uow, IPhotoService photoService) : BaseApiController
     {
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<IReadOnlyList<Member>>>> GetMemberList()
+        public async Task<ActionResult<ApiResponse<PaginatedResult<Member>>>> GetMemberList([FromQuery] PagingParams pagingParams)
         {
-            var members = await uow.MemberRepository.GetMemberListAsync();
+            var members = await uow.MemberRepository.GetMemberListAsync(pagingParams);
             return SuccessResponse(members, "Members retrieved successfully");
         }
 
