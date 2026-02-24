@@ -1,0 +1,52 @@
+<div class="flex items-center w-full gap-4 py-3">
+  <!-- Page size selector -->
+  <label class="flex items-center gap-2 text-sm">
+    <span>Items per page:</span>
+
+    <select
+      #pageSizeSelect
+      class="select select-bordered w-24"
+      [value]="pageSize()"
+      (change)="changePageSize(+pageSizeSelect.value)"
+      aria-label="Select items per page"
+    >
+      @for (size of pageSizeOptions(); track size) {
+        <option [value]="size">
+          {{ size }}
+        </option>
+      }
+    </select>
+  </label>
+
+  <!-- Range display -->
+  <div class="text-sm flex-1">
+    @if (totalCount() > 0) {
+      {{ firstItemIndex() }} - {{ lastItemIndex() }} of {{ totalCount() }}
+    } @else {
+      0 results
+    }
+  </div>
+
+  <!-- Navigation buttons -->
+  <div class="flex items-center gap-2">
+    <button
+      type="button"
+      class="btn btn-circle btn-ghost"
+      [disabled]="pageNumber() === 1"
+      (click)="previous()"
+      aria-label="Previous page"
+    >
+      &larr;
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-circle btn-ghost"
+      [disabled]="pageNumber() >= totalPages()"
+      (click)="next()"
+      aria-label="Next page"
+    >
+      &rarr;
+    </button>
+  </div>
+</div>

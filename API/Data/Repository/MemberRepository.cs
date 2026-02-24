@@ -22,14 +22,39 @@ public class MemberRepository(AppDbContext context) : IMemberRespository
             .SingleOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<PaginatedResult<Member>> GetMemberListAsync(PagingParams pagingParams)
+    public async Task<PaginatedResult<Member>> GetMemberListAsync(MemberParams memberParams)
     {
         var query = context.Members.AsQueryable(); // Deferred execution
 
+        // Exclude current user
+        query = query.Where(x =>
+            x.Id != memberParams.CurrentMemberId);
+
+        // Filter by gender (if provided)
+        if (!string.IsNullOrEmpty(memberParams.Gender))
+        {
+            query = query.Where(x => x.Gender == memberParams.Gender);
+        }
+
+        // Oldest acceptable DOB (based on max age)
+        var minDob = DateOnly.FromDateTime(
+            DateTime.Today.AddYears(-memberParams.MaxAge - 1)
+        );
+
+        // Youngest acceptable DOB (based on min age)
+        var maxDob = DateOnly.FromDateTime(
+            DateTime.Today.AddYears(-memberParams.MinAge)
+        );
+
+        query = query.Where(x =>
+            x.DateOfBirth >= minDob &&
+            x.DateOfBirth <= maxDob
+        );
+
         return await PaginationHelper.CreateAsync(
             query,
-            pagingParams.PageNumber,
-            pagingParams.PageSize
+            memberParams.PageNumber,
+            memberParams.PageSize
         );
     }
 

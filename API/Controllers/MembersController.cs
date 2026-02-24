@@ -15,9 +15,11 @@ namespace API.Controllers
     public class MembersController(IUnitOfWork uow, IPhotoService photoService) : BaseApiController
     {
         [HttpGet]
-        public async Task<ActionResult<ApiResponse<PaginatedResult<Member>>>> GetMemberList([FromQuery] PagingParams pagingParams)
+        public async Task<ActionResult<ApiResponse<PaginatedResult<Member>>>> GetMemberList([FromQuery] MemberParams memberParams)
         {
-            var members = await uow.MemberRepository.GetMemberListAsync(pagingParams);
+            memberParams.CurrentMemberId = User.GetMemberId();
+            var members = await uow.MemberRepository.GetMemberListAsync(memberParams);
+            
             return SuccessResponse(members, "Members retrieved successfully");
         }
 
