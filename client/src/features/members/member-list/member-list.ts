@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
 import { MemberService } from '../../../core/services/member-service';
@@ -12,10 +12,13 @@ import { MemberCard } from '../member-card/member-card';
   selector: 'app-member-list',
   imports: [MemberCard, Paginator, FilterModal],
   templateUrl: './member-list.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemberList {
-  @ViewChild('filterModal') modal?: FilterModal;
   private readonly memberService = inject(MemberService);
+
+  protected readonly isFilterOpen = signal(false);
+
   protected readonly memberParams = signal(this.createInitialParams());
 
   private readonly initialPaginatedResult: PaginatedResult<Member> = {
@@ -30,7 +33,7 @@ export class MemberList {
 
   protected readonly paginatedMembers = toSignal(
     toObservable(this.memberParams).pipe(
-      switchMap((memberParams) => this.memberService.getMembers(memberParams)),
+      switchMap((params) => this.memberService.getMembers(params)),
     ),
     { initialValue: this.initialPaginatedResult },
   );
@@ -38,28 +41,17 @@ export class MemberList {
   private createInitialParams(): MemberParams {
     const params = new MemberParams();
     params.pageSize = 5;
+    params.orderBy = 'created';
     return params;
   }
 
-  protected onPageNumberChange(pageNumber: number): void {
-    this.memberParams.update((params) => ({ ...params, pageNumber }));
-  }
-
-  protected onPageSizeChange(pageSize: number): void {
-    this.memberParams.update((params) => ({ ...params, pageSize, pageNumber: 1 }));
-  }
-
-  protected resetFilters(): void {
-    const nextParams = new MemberParams();
-    nextParams.pageSize = this.memberParams().pageSize;
-    this.memberParams.set(nextParams);
-  }
-
   protected openModal(): void {
-    this.modal?.open();
+    this.isFilterOpen.set(true);
   }
 
-  protected onClose(): void {}
+  protected closeModal(): void {
+    this.isFilterOpen.set(false);
+  }
 
   protected onFilterChange(data: MemberParams): void {
     this.memberParams.update((params) => ({
@@ -68,5 +60,28 @@ export class MemberList {
       pageSize: params.pageSize,
       pageNumber: 1,
     }));
+
+    this.closeModal();
+  }
+
+  protected onPageNumberChange(pageNumber: number): void {
+    this.memberParams.update((params) => ({
+      ...params,
+      pageNumber,
+    }));
+  }
+
+  protected onPageSizeChange(pageSize: number): void {
+    this.memberParams.update((params) => ({
+      ...params,
+      pageSize,
+      pageNumber: 1,
+    }));
+  }
+
+  protected resetFilters(): void {
+    const nextParams = this.createInitialParams();
+    nextParams.pageSize = this.memberParams().pageSize;
+    this.memberParams.set(nextParams);
   }
 }

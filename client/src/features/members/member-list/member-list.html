@@ -1,16 +1,31 @@
 @if (paginatedMembers(); as paginatedResult) {
   <div class="flex flex-col w-full gap-4">
-    <div class="flex justify-between">
-      <div class="flex gap-3 items-center">
-        <button type="button" class="btn btn-primary" (click)="openModal()">Select Filters</button>
-        <button type="button" class="btn btn-ghost" (click)="resetFilters()">Reset</button>
+
+    <div class="flex justify-between items-center">
+      <div class="flex gap-3">
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="openModal()"
+        >
+          Select Filters
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-ghost"
+          (click)="resetFilters()"
+        >
+          Reset
+        </button>
       </div>
+
       <app-paginator
         [pageNumber]="memberParams().pageNumber"
-        (pageNumberChange)="onPageNumberChange($event)"
+        [pageSize]="memberParams().pageSize"
         [totalCount]="paginatedResult.metadata.totalCount"
         [totalPages]="paginatedResult.metadata.totalPages"
-        [pageSize]="memberParams().pageSize"
+        (pageNumberChange)="onPageNumberChange($event)"
         (pageSizeChange)="onPageSizeChange($event)"
       />
     </div>
@@ -22,14 +37,18 @@
         }
       </div>
     } @else {
-      <p class="text-sm">No members found.</p>
+      <p class="text-sm text-base-content/70">
+        No members found.
+      </p>
     }
+
   </div>
 }
 
-<app-filter-modal
-  #filterModal
-  (closeModal)="onClose()"
-  (submitData)="onFilterChange($event)"
-  [memberParams]="memberParams()"
-/>
+@if (isFilterOpen()) {
+  <app-filter-modal
+    [memberParams]="memberParams()"
+    (closeModal)="closeModal()"
+    (submitData)="onFilterChange($event)"
+  />
+}

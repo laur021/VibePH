@@ -1,66 +1,76 @@
-import { Component, ElementRef, model, output, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+} from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MemberParams } from '../../../interface/member';
 
 @Component({
   selector: 'app-filter-modal',
-  imports: [FormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './filter-modal.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterModal {
-  @ViewChild('filterModal') modalRef!: ElementRef<HTMLDialogElement>;
-  closeModal = output();
-  submitData = output<MemberParams>();
-  memberParams = model(new MemberParams());
+  private readonly fb = inject(FormBuilder);
+
+  readonly memberParams = input.required<MemberParams>();
+  readonly closeModal = output<void>();
+  readonly submitData = output<MemberParams>();
+
+  readonly form = this.fb.nonNullable.group({
+    gender: ['' as 'male' | 'female' | ''],
+    minAge: [18, [Validators.min(18)]],
+    maxAge: [100, [Validators.min(18)]],
+    orderBy: ['created' as 'created' | 'lastActive'],
+  });
 
   constructor() {
-    const filters = localStorage.getItem('filters');
-    if (filters) {
-      this.memberParams.set(JSON.parse(filters));
-    }
+    effect(() => {
+      const params = this.memberParams();
+      this.form.patchValue(
+        {
+          gender: params.gender === 'male' || params.gender === 'female' ? params.gender : '',
+          minAge: params.minAge,
+          maxAge: params.maxAge,
+          orderBy: params.orderBy === 'lastActive' ? 'lastActive' : 'created',
+        },
+        { emitEvent: false },
+      );
+    });
   }
 
-  open() {
-    this.modalRef.nativeElement.showModal();
-  }
+  readonly isAgeInvalid = computed(() => {
+    const { minAge, maxAge } = this.form.getRawValue();
+    return maxAge < minAge;
+  });
 
-  close() {
-    this.modalRef.nativeElement.close();
+  close(): void {
     this.closeModal.emit();
   }
 
-  submit() {
-    this.submitData.emit(this.memberParams());
+  submit(): void {
+    if (this.form.invalid || this.isAgeInvalid()) return;
+
+    const formValue = this.form.getRawValue();
+    const nextParams = new MemberParams();
+    nextParams.pageNumber = 1;
+    nextParams.pageSize = this.memberParams().pageSize;
+    nextParams.gender = formValue.gender || undefined;
+    nextParams.minAge = formValue.minAge;
+    nextParams.maxAge = formValue.maxAge;
+    nextParams.orderBy = formValue.orderBy;
+
+    this.submitData.emit(nextParams);
     this.close();
   }
 
-  onGenderChange(gender: string) {
-    this.memberParams.update((params) => ({ ...params, gender: gender || undefined }));
-  }
-
-  onMinAgeModelChange(minAge: number) {
-    const safeMinAge = Number.isFinite(minAge) ? minAge : 18;
-    this.memberParams.update((params) => ({ ...params, minAge: safeMinAge }));
-  }
-
-  onMaxAgeModelChange(maxAge: number) {
-    const safeMaxAge = Number.isFinite(maxAge) ? maxAge : this.memberParams().minAge;
-    this.memberParams.update((params) => ({ ...params, maxAge: safeMaxAge }));
-  }
-
-  onOrderByChange(orderBy: string) {
-    this.memberParams.update((params) => ({ ...params, orderBy }));
-  }
-
-  onMinAgeChange() {
-    if (this.memberParams().minAge < 18) {
-      this.memberParams.update((params) => ({ ...params, minAge: 18 }));
-    }
-  }
-
-  onMaxAgeChange() {
-    if (this.memberParams().maxAge < this.memberParams().minAge) {
-      this.memberParams.update((params) => ({ ...params, maxAge: params.minAge }));
-    }
+  resetGender(): void {
+    this.form.patchValue({ gender: '' });
   }
 }

@@ -1,77 +1,75 @@
-<dialog #filterModal class="modal">
+<dialog class="modal modal-open" role="dialog" aria-modal="true" aria-labelledby="filter-title">
   <div class="modal-box max-w-lg">
-    <h3 class="text-lg font-bold">Select filters</h3>
+    <h2 id="filter-title" class="text-lg font-bold">Select Filters</h2>
 
-    <div class="flex justify-between w-full items-center mt-6">
-        <div class="flex flex-col w-full gap-6">
-            <label class="flex justify-between items-center">
-                <span class="font-semibold">Select gender:</span>
-                <form class="filter">
-                    <input type="reset" value="x" class="btn btn-square">
-                    <input
-                        type="radio" class="btn"
-                        [ngModel]="memberParams().gender"
-                        (ngModelChange)="onGenderChange($event)"
-                        aria-label="Male"
-                        name="gender"
-                        value="male"
-                    >
-                    <input
-                        type="radio" class="btn"
-                        [ngModel]="memberParams().gender"
-                        (ngModelChange)="onGenderChange($event)"
-                        aria-label="Female"
-                        name="gender"
-                        value="female"
-                    >
-                </form>
-            </label>
-            <label class="flex justify-between items-center">
-                <span class="font-semibold">Select age</span>
-                <div class="flex gap-3">
-                    <input
-                        type="number"
-                        class="input w-20"
-                        [min]="18"
-                        [ngModel]="memberParams().minAge"
-                        (ngModelChange)="onMinAgeModelChange(+$event)"
-                        name="minAge"
-                        (change)="onMinAgeChange()"
-                    >
-                    <input
-                        type="number"
-                        class="input w-20"
-                        [min]="memberParams().minAge || 18"
-                        [ngModel]="memberParams().maxAge"
-                        (ngModelChange)="onMaxAgeModelChange(+$event)"
-                        name="maxAge"
-                        (change)="onMaxAgeChange()"
-                    >
-                </div>
-            </label>
-            <label class="flex justify-between items-center">
-                <span class="font-semibold">Order by: </span>
-                <select
-                    name="orderBy"
-                    class="select"
-                    [ngModel]="memberParams().orderBy"
-                    (ngModelChange)="onOrderByChange($event)"
-                >
-                    <option disabled selected>Order by</option>
-                    <option value="created">Newest members</option>
-                    <option value="lastActive">Last active</option>
-                </select>
-            </label>
+    <form [formGroup]="form" class="space-y-6 mt-6" (ngSubmit)="submit()">
+      <fieldset class="space-y-2">
+        <legend class="font-semibold">Select gender</legend>
+
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            class="btn btn-square btn-sm"
+            (click)="resetGender()"
+            aria-label="Clear gender selection"
+          >
+            x
+          </button>
+
+          <input type="radio" class="btn" value="male" formControlName="gender" aria-label="Male" />
+
+          <input
+            type="radio"
+            class="btn"
+            value="female"
+            formControlName="gender"
+            aria-label="Female"
+          />
         </div>
-    </div>
+      </fieldset>
 
-    <div class="modal-action">
-      <button (click)="submit()" class="btn btn-primary">Submit</button>
-    </div>
+      <div class="space-y-2">
+        <label for="minAge" class="font-semibold block"> Select age </label>
+
+        <div class="flex gap-3">
+          <input
+            id="minAge"
+            type="number"
+            class="input input-bordered w-24"
+            formControlName="minAge"
+            min="18"
+            aria-describedby="age-error"
+          />
+
+          <input
+            type="number"
+            class="input input-bordered w-24"
+            formControlName="maxAge"
+            [min]="form.value.minAge || 18"
+            aria-describedby="age-error"
+          />
+        </div>
+
+        @if (isAgeInvalid()) {
+          <p id="age-error" class="text-error text-sm">
+            Max age must be greater than or equal to min age.
+          </p>
+        }
+      </div>
+
+      <div class="space-y-2">
+        <label for="orderBy" class="font-semibold block"> Order by </label>
+
+        <select id="orderBy" class="select select-bordered w-full" formControlName="orderBy">
+          <option value="created">Newest members</option>
+          <option value="lastActive">Last active</option>
+        </select>
+      </div>
+
+      <div class="modal-action">
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+        <button type="button" class="btn btn-ghost" (click)="close()">Cancel</button>
+      </div>
+    </form>
   </div>
-
-  <form method="dialog" class="modal-backdrop">
-    <button (click)="close()">Close</button>
-  </form>
-
 </dialog>
