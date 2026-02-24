@@ -1,66 +1,19 @@
 @if (paginatedMembers(); as paginatedResult) {
   <div class="flex flex-col w-full gap-4">
-    <div class="flex flex-wrap items-end gap-3">
-      <label class="form-control w-36">
-        <span class="label-text text-sm">Gender</span>
-        <select #genderSelect class="select select-bordered" [value]="memberParams().gender ?? ''">
-          <option value="">All</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-        </select>
-      </label>
-
-      <label class="form-control w-28">
-        <span class="label-text text-sm">Min age</span>
-        <input
-          #minAgeInput
-          type="number"
-          class="input input-bordered"
-          min="18"
-          max="100"
-          [value]="memberParams().minAge"
-        />
-      </label>
-
-      <label class="form-control w-28">
-        <span class="label-text text-sm">Max age</span>
-        <input
-          #maxAgeInput
-          type="number"
-          class="input input-bordered"
-          min="18"
-          max="100"
-          [value]="memberParams().maxAge"
-        />
-      </label>
-
-      <label class="form-control w-40">
-        <span class="label-text text-sm">Sort by</span>
-        <select #orderBySelect class="select select-bordered" [value]="memberParams().orderBy">
-          <option value="lastActive">Last Active</option>
-          <option value="created">Newest Members</option>
-        </select>
-      </label>
-
-      <button
-        type="button"
-        class="btn btn-primary"
-        (click)="applyFilters(genderSelect.value, +minAgeInput.value, +maxAgeInput.value, orderBySelect.value)"
-      >
-        Apply
-      </button>
-
-      <button type="button" class="btn btn-ghost" (click)="resetFilters()">Reset</button>
+    <div class="flex justify-between">
+      <div class="flex gap-3 items-center">
+        <button type="button" class="btn btn-primary" (click)="openModal()">Select Filters</button>
+        <button type="button" class="btn btn-ghost" (click)="resetFilters()">Reset</button>
+      </div>
+      <app-paginator
+        [pageNumber]="memberParams().pageNumber"
+        (pageNumberChange)="onPageNumberChange($event)"
+        [totalCount]="paginatedResult.metadata.totalCount"
+        [totalPages]="paginatedResult.metadata.totalPages"
+        [pageSize]="memberParams().pageSize"
+        (pageSizeChange)="onPageSizeChange($event)"
+      />
     </div>
-
-    <app-paginator
-      [pageNumber]="memberParams().pageNumber"
-      (pageNumberChange)="onPageNumberChange($event)"
-      [totalCount]="paginatedResult.metadata.totalCount"
-      [totalPages]="paginatedResult.metadata.totalPages"
-      [pageSize]="memberParams().pageSize"
-      (pageSizeChange)="onPageSizeChange($event)"
-    />
 
     @if (paginatedResult.items.length > 0) {
       <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
@@ -73,3 +26,10 @@
     }
   </div>
 }
+
+<app-filter-modal
+  #filterModal
+  (closeModal)="onClose()"
+  (submitData)="onFilterChange($event)"
+  [memberParams]="memberParams()"
+/>

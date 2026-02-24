@@ -1,18 +1,20 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
 import { MemberService } from '../../../core/services/member-service';
-import { PaginatedResult } from '../../../interface/pagination';
 import { Member, MemberParams } from '../../../interface/member';
+import { PaginatedResult } from '../../../interface/pagination';
 import { Paginator } from '../../../shared/paginator/paginator';
+import { FilterModal } from '../filter-modal/filter-modal';
 import { MemberCard } from '../member-card/member-card';
 
 @Component({
   selector: 'app-member-list',
-  imports: [MemberCard, Paginator],
+  imports: [MemberCard, Paginator, FilterModal],
   templateUrl: './member-list.html',
 })
 export class MemberList {
+  @ViewChild('filterModal') modal?: FilterModal;
   private readonly memberService = inject(MemberService);
   protected readonly memberParams = signal(this.createInitialParams());
 
@@ -47,28 +49,24 @@ export class MemberList {
     this.memberParams.update((params) => ({ ...params, pageSize, pageNumber: 1 }));
   }
 
-  protected applyFilters(
-    gender: string,
-    minAge: number,
-    maxAge: number,
-    orderBy: string,
-  ): void {
-    const safeMinAge = Number.isFinite(minAge) ? minAge : 18;
-    const safeMaxAge = Number.isFinite(maxAge) ? maxAge : 100;
-
-    this.memberParams.update((params) => ({
-      ...params,
-      gender: gender || undefined,
-      minAge: safeMinAge,
-      maxAge: safeMaxAge,
-      orderBy,
-      pageNumber: 1,
-    }));
-  }
-
   protected resetFilters(): void {
     const nextParams = new MemberParams();
     nextParams.pageSize = this.memberParams().pageSize;
     this.memberParams.set(nextParams);
+  }
+
+  protected openModal(): void {
+    this.modal?.open();
+  }
+
+  protected onClose(): void {}
+
+  protected onFilterChange(data: MemberParams): void {
+    this.memberParams.update((params) => ({
+      ...params,
+      ...data,
+      pageSize: params.pageSize,
+      pageNumber: 1,
+    }));
   }
 }
