@@ -1,8 +1,10 @@
 using API.Errors;
+using API.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
+[ServiceFilter(typeof(LogUserActivity))] // runs after every action
 [Route("api/[controller]")]
 [ApiController]
 public class BaseApiController : ControllerBase

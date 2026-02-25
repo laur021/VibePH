@@ -19,24 +19,24 @@ export class MemberService {
   getMembers(memberParams: MemberParams) {
     let params = new HttpParams();
 
-    // Append pagination params
     params = params.append('pageNumber', memberParams.pageNumber);
     params = params.append('pageSize', memberParams.pageSize);
-
-    // Append age filters
     params = params.append('minAge', memberParams.minAge);
     params = params.append('maxAge', memberParams.maxAge);
+    params = params.append('orderBy', memberParams.orderBy);
 
-    // Only send gender if it exists
     if (memberParams.gender) {
       params = params.append('gender', memberParams.gender);
     }
 
-    params = params.append('orderBy', memberParams.orderBy);
-
     return this.http
       .get<ApiResponse<PaginatedResult<Member>>>(this.baseUrl + 'members', { params })
-      .pipe(map((response) => response.data));
+      .pipe(
+        tap(() => {
+          localStorage.setItem('filters', JSON.stringify(memberParams));
+        }),
+        map((response) => response.data),
+      );
   }
 
   getMember(id: string) {

@@ -26,6 +26,8 @@ export class AccountService {
 
   logout() {
     this.removeCurrentUser();
+    localStorage.removeItem('theme');
+    localStorage.removeItem('filters'); // reset persisted filters
   }
 
   register(registerCreds: RegisterCreds) {

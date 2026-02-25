@@ -5,10 +5,11 @@ import { AccountService } from '../../../core/services/account-service';
 import { MemberService } from '../../../core/services/member-service';
 import { ToastService } from '../../../core/services/toast-service';
 import { Member } from '../../../interface/member';
+import { TimeAgoPipe } from '../../../core/pipes/time-ago-pipe';
 
 @Component({
   selector: 'app-member-profile',
-  imports: [DatePipe, ReactiveFormsModule],
+  imports: [DatePipe, ReactiveFormsModule, TimeAgoPipe],
   templateUrl: './member-profile.html',
   host: {
     '(window:beforeunload)': 'onBeforeUnload($event)',

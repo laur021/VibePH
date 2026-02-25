@@ -46,6 +46,14 @@ public class MemberRepository(AppDbContext context) : IMemberRespository
             DateTime.Today.AddYears(-memberParams.MinAge)
         );
 
+        // Apply sorting based on OrderBy parameter
+        query = memberParams.OrderBy switch
+        {
+            "created" => query.OrderByDescending(x => x.Created),     // newest members first
+            _ => query.OrderByDescending(x => x.LastActive)           // default: most recently active
+        };
+
+
         query = query.Where(x =>
             x.DateOfBirth >= minDob &&
             x.DateOfBirth <= maxDob

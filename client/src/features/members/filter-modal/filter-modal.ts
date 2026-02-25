@@ -1,13 +1,13 @@
 import {
-  Component,
   ChangeDetectionStrategy,
+  Component,
   computed,
   effect,
   inject,
   input,
   output,
 } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MemberParams } from '../../../interface/member';
 
 @Component({
@@ -24,10 +24,10 @@ export class FilterModal {
   readonly submitData = output<MemberParams>();
 
   readonly form = this.fb.nonNullable.group({
-    gender: ['' as 'male' | 'female' | ''],
+    gender: 'male',
     minAge: [18, [Validators.min(18)]],
     maxAge: [100, [Validators.min(18)]],
-    orderBy: ['created' as 'created' | 'lastActive'],
+    orderBy: 'lastActive',
   });
 
   constructor() {
@@ -38,7 +38,7 @@ export class FilterModal {
           gender: params.gender === 'male' || params.gender === 'female' ? params.gender : '',
           minAge: params.minAge,
           maxAge: params.maxAge,
-          orderBy: params.orderBy === 'lastActive' ? 'lastActive' : 'created',
+          orderBy: params.orderBy === 'created' ? 'created' : 'lastActive',
         },
         { emitEvent: false },
       );
