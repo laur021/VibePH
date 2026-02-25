@@ -3,25 +3,14 @@
     <div class="flex justify-between items-start gap-4">
       <div class="flex flex-col gap-2">
         <div class="flex items-center gap-2">
-        <button
-          type="button"
-          class="btn btn-primary"
-          (click)="openModal()"
-        >
-          Select Filters
-        </button>
+          <button type="button" class="btn btn-primary" (click)="openModal()">
+            Select Filters
+          </button>
 
-        <button
-          type="button"
-          class="btn btn-ghost"
-          (click)="resetFilters()"
-        >
-          Reset
-        </button>
-        </div>
-
-        <div class="text-lg bg-base-100 p-2 px-4 border rounded-lg text-primary capitalize">
-          {{ displayMessage() }}
+          <button type="button" class="btn btn-ghost" (click)="resetFilters()">Reset</button>
+          <div class="text-lg bg-base-100 p-2 px-4 border rounded-lg text-primary capitalize">
+            {{ displayMessage() }}
+          </div>
         </div>
       </div>
 
@@ -42,9 +31,7 @@
         }
       </div>
     } @else {
-      <p class="text-sm text-base-content/70">
-        No members found.
-      </p>
+      <p class="text-sm text-base-content/70">No members found.</p>
     }
   </div>
 }
