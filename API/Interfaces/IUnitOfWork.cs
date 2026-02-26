@@ -6,6 +6,7 @@ public interface IUnitOfWork
 {
     IMemberRespository MemberRepository { get; }
     IAccountRepository AccountRepository { get; }
+    ILikeRepository LikeRepository { get; }
     Task<bool> CompleteAsync();
     bool HasChanges();
 }

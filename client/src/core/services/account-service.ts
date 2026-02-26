@@ -5,12 +5,14 @@ import { tap } from 'rxjs/internal/operators/tap';
 import { environment } from '../../environments/environment';
 import { ApiResponse } from '../../interface/apiResponse';
 import { LoginCreds, RegisterCreds, User } from '../../interface/user';
+import { LikeService } from './like-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccountService {
   private http = inject(HttpClient);
+  private likeService = inject(LikeService);
   currentUser = signal<User | null>(null);
 
   baseUrl = environment.apiUrl;
@@ -46,11 +48,13 @@ export class AccountService {
     if (user) {
       this.currentUser.set(user);
       localStorage.setItem('user', JSON.stringify(user));
+      this.likeService.getLikeIds(); // load like IDs when user logs in or registers
     }
   }
 
   private removeCurrentUser() {
     this.currentUser.set(null);
     localStorage.removeItem('user');
+    this.likeService.clearLikeIds(); // clear like IDs when user logs out
   }
 }

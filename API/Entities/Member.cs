@@ -27,5 +27,11 @@ public class Member
     public AppUser User { get; set; } = null!;
     [JsonIgnore]
     public ICollection<Photo> Photos { get; set; } = [];
+    
+    [JsonIgnore]
+    public List<MemberLike> LikedByMembers { get; set; } = new();
+
+    [JsonIgnore]
+    public List<MemberLike> LikedMembers { get; set; } = new();
 
 }

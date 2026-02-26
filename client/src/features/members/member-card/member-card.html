@@ -1,6 +1,6 @@
 @if (member(); as member) {
   <div
-    class="card cursor-pointer transition-all duration-300 ease-in-out transform hover:-translate-y-2"
+    class="card cursor-pointer transition-all duration-300 ease-in-out transform hover:-translate-y-2 relative"
     [routerLink]="['/members', member.id]"
   >
     <img
@@ -8,6 +8,23 @@
       [alt]="member.displayName + ' image'"
       class="rounded-lg"
     />
+    <button class="absolute top-1 right-1 z-40 btn btn-ghost btn-circle">
+      <svg
+        [attr.fill]="hasLiked() ? 'red' : 'none'"
+        class="w-7 h-7"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318
+             a4.5 4.5 0 116.364 6.364L12 21.364 4.318 12.682
+             a4.5 4.5 0 010-6.364z"
+        />
+      </svg>
+    </button>
 
     <div
       class="card-actions absolute bottom-0 w-full px-3 py-1 bg-linear-to-t from-black via-black/75 to-black/0 rounded-b-lg z-40"

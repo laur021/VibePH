@@ -8,11 +8,15 @@ public class UnitOfWork(AppDbContext context, ITokenService tokenService) : IUni
 {
     private IMemberRespository? _memberRepository;
     private IAccountRepository? _accountRepository;
+    private ILikeRepository? _likeRepository;
     public IMemberRespository MemberRepository => _memberRepository
         ??= new MemberRepository(context);
 
     public IAccountRepository AccountRepository => _accountRepository
         ??= new AccountRepository(context, tokenService);
+
+    public ILikeRepository LikeRepository => _likeRepository
+        ??= new LikeRepository(context);
 
     public async Task<bool> CompleteAsync()
     {
