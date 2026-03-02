@@ -19,7 +19,7 @@ namespace API.Controllers
         {
             memberParams.CurrentMemberId = User.GetMemberId();
             var members = await uow.MemberRepository.GetMemberListAsync(memberParams);
-            
+
             return SuccessResponse(members, "Members retrieved successfully");
         }
 
@@ -161,6 +161,5 @@ namespace API.Controllers
 
             return ErrorResponse("Problem deleting the photo", StatusCodes.Status400BadRequest);
         }
-
     }
 }
